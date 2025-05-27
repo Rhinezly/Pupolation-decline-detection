@@ -1,0 +1,11 @@
+documents/
+outputs_test/
+sandbox/
+
+*.*
+!.gitignore
+!*.py
+!*.R
+!*.sh
+!*.csv
+!*.md
