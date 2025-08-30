@@ -16,7 +16,9 @@ def get_tree_prefixes():
 
 prefix = get_tree_prefixes()
 
-# Calculate summary statistics
+
+##### Calculate summary statistics #####
+
 def oneway_stats(ts):
     stats = {
         "Number of trees": ts.num_trees,
@@ -31,14 +33,12 @@ def oneway_output(ts, prefix):
     results = {}
     for t in timepoints:
         # Extract samples for the current time point
-        sample_ids = [n.id for n in ts.nodes() if n.time == t]
+        sample_ids = ts.samples(time=t)
         sub_ts = ts.simplify(samples=sample_ids)
 
-        # Calculate statistics
         stats = oneway_stats(sub_ts)
         results[t] = stats
 
-    # Convert results to a pandas DataFrame
     oneway_df = pd.DataFrame(results).T  # Transpose to have time points as rows
     oneway_df.index.name = "t"
     oneway_df.to_csv(f"{prefix}.csv")
@@ -84,5 +84,4 @@ def process_trees_file():
         np.savez(f"{prefix}.npz", fst=fst, dxy=dxy, gr=gr)
 
 
-if __name__ == "__main__":
-    process_trees_file()
+process_trees_file()

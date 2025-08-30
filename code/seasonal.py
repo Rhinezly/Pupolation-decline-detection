@@ -2,24 +2,23 @@ import msprime
 import os
 import sys
 
-# If the shell script set the Ne values，use them; or else use the default 30000
+# If the shell script set the half_period values，use them; or else use the default
 if len(sys.argv) > 1:
     half_period = int(sys.argv[1])
 else:
     half_period = 6
 
-seed_number = int(os.getenv("PBS_ARRAY_INDEX"))  # Find out the job number
+seed_number = int(os.getenv("PBS_ARRAY_INDEX"))
 
 
 ### Parameters ###
-Ne_wet = 30000  # Effective population size
-Ne_dry = 300  # Population size at time 0 (the most recent time)
-max_time = 1e6  # Maximum time in generations
-seqlength = 1e6  # Sequence length
-theta = 0.0045  # Mutation parameter (theta = 4 * Ne * mu)
-mu = theta / (4 * Ne_wet)  # Mutation rate
-recombination_rate = 10 * mu  # Recombination rate
-timepoints = list(range(0, 73, 3))  # Time points from 0 to 72 in steps of 3
+Ne_wet = 30000  # Effective population size at wet season
+Ne_dry = 300  # Population size at dry season
+max_time = 1e6  # Maximum generations of simulation (for the while loop)
+seqlength = 1e6  
+mu = 3.75e-8  
+recombination_rate = 10 * mu  
+timepoints = list(range(0, 73, 3)) 
 
 
 ### Define demographic model ###
@@ -46,27 +45,24 @@ samples = [msprime.SampleSet(50, population="pop",time=t) for t in timepoints]
 ### Simulate ancestry ###
 ts = msprime.sim_ancestry(
     samples=samples,
-    demography=demography,  # Use the defined demographic model
-    sequence_length=seqlength,  # Genome length
+    demography=demography,
+    sequence_length=seqlength, 
     recombination_rate=recombination_rate,
     model=[
-        msprime.StandardCoalescent(),
-    ],
+        msprime.DiscreteTimeWrightFisher(duration=200),
+        msprime.StandardCoalescent()
+        ],
     random_seed=seed_number
 )
 
 # Add mutations
 mts = msprime.sim_mutations(
-    ts,  # Input tree sequence
-    rate=mu,  # Mutation rate
+    ts, 
+    rate=mu, 
     random_seed=seed_number
 )
 
 
+### Save tree sequence ###
+mts.dump(f"seasonal_{seed_number}.trees")
 
-### Save tree sequence to file ###
-mts.dump(f"seasonal_{seed_number}.trees")  # Save the tree sequence to a file
-
-### Save to VCF file ###
-with open(f"seasonal_{seed_number}.vcf", "w") as vcf_file:
-    mts.write_vcf(vcf_file)  # Write the tree sequence to a VCF file

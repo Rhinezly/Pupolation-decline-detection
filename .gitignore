@@ -4,8 +4,11 @@ sandbox/
 
 *.*
 !.gitignore
+!.gitkeep
 !*.py
 !*.R
 !*.sh
 !*.csv
 !*.md
+!*.ipynb
+!*.c
