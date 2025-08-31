@@ -17,7 +17,7 @@ This directory contains the codes and data for producing the results in the auth
 
 This is not standalone C but rather a "plugin" to be mounted and recognised by R via an API. 
 
-In terminal, run `R CMD SHLIB aestivation3.c -fopenmp`. This will create a shared object with the same name but in .so extension (.dll in Windows). The shared object can then be mounted to R. The code to do it is already included in `LD.R`.
+In terminal, run `R CMD SHLIB aestivation3.c -fopenmp`. This will create a shared object with the same name but in .so extension (.dll in Windows). The shared object can then be mounted to R. The code to mount it is already included in `LD.R`.
 
 - **hpc_*.sh**
 
